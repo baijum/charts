@@ -12,10 +12,11 @@ def get_modified_charts():
         m = pattern.match(line)
         breakpoint()
         if m:
-            print("hiiiiiiii")
-            cat, org, chart, version = m.groups()
+            category, organization, chart, version = m.groups()
+            return category, organization, chart, version
+    return "", "", "", ""
 
-def prepare_chart_for_release():
+def prepare_chart_for_release(category, organization, chart, version):
     pass
 
 def push_chart_release():
@@ -28,4 +29,5 @@ def push_index():
     pass
 
 def main():
-    get_modified_charts()
+    category, organization, chart, version = get_modified_charts()
+    prepare_chart_for_release(category, organization, chart, version )
