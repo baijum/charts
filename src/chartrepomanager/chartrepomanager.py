@@ -1,3 +1,4 @@
+import shutil
 import os
 import re
 import subprocess
@@ -18,10 +19,13 @@ def get_modified_charts():
 def prepare_chart_for_release(category, organization, chart, version):
     path = os.path.join("charts", category, organization, chart, version)
     out = subprocess.run(["helm", "package", path], capture_output=True)
-    print(out.stdout.decode("utf-8").strip())
+    p = out.stdout.decode("utf-8").strip().split(":")[1].strip()
+    shutil.move(p, ".cr-release-packages")
 
 def push_chart_release():
-    pass
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        subprocess.run(["cr", "upload", "-o", "baijum", "-r", "charts", "-t", token], capture_output=True)
 
 def create_index():
     pass
@@ -32,3 +36,4 @@ def push_index():
 def main():
     category, organization, chart, version = get_modified_charts()
     prepare_chart_for_release(category, organization, chart, version )
+    push_chart_release()
