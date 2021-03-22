@@ -20,6 +20,10 @@ def prepare_chart_for_release(category, organization, chart, version):
     path = os.path.join("charts", category, organization, chart, version)
     out = subprocess.run(["helm", "package", path], capture_output=True)
     p = out.stdout.decode("utf-8").strip().split(":")[1].strip()
+    try:
+        os.remove(os.path.join(os.path.dirname(p), ".cr-release-packages", os.path.basename(p)))
+    except FileNotFoundError:
+        pass
     shutil.move(p, ".cr-release-packages")
 
 def push_chart_release():
@@ -28,6 +32,11 @@ def push_chart_release():
         subprocess.run(["cr", "upload", "-o", "baijum", "-r", "charts", "-t", token], capture_output=True)
 
 def create_index():
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts"], capture_output=True)
+
+def update_chart_annotation():
     pass
 
 def push_index():
@@ -37,3 +46,6 @@ def main():
     category, organization, chart, version = get_modified_charts()
     prepare_chart_for_release(category, organization, chart, version )
     push_chart_release()
+    update_chart_annotation()
+    create_index()
+    push_index()
