@@ -34,12 +34,9 @@ def push_chart_release():
 def create_index():
     token = os.environ.get("GITHUB_TOKEN")
     if token:
-        subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts"], capture_output=True)
+        subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts", "-t", token, "--push"], capture_output=True)
 
 def update_chart_annotation():
-    pass
-
-def push_index():
     pass
 
 def main():
@@ -48,4 +45,3 @@ def main():
     push_chart_release()
     update_chart_annotation()
     create_index()
-    push_index()
