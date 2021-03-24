@@ -1,0 +1,10 @@
+---
+provider:
+  name: test-org1
+  key: KEY
+charts:
+  - name: chart1
+  - name: chart1
+users:
+  - name: user1
+  - name: user2

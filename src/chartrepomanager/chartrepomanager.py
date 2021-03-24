@@ -3,6 +3,12 @@ import os
 import re
 import subprocess
 
+import yaml
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
+
 def get_modified_charts():
     commit = subprocess.run(["git", "rev-parse", "--verify", "HEAD"], capture_output=True)
     commit_hash = commit.stdout.strip()
@@ -20,11 +26,13 @@ def prepare_chart_for_release(category, organization, chart, version):
     path = os.path.join("charts", category, organization, chart, version)
     out = subprocess.run(["helm", "package", path], capture_output=True)
     p = out.stdout.decode("utf-8").strip().split(":")[1].strip()
+    chartname = os.path.basename(p)
     try:
-        os.remove(os.path.join(os.path.dirname(p), ".cr-release-packages", os.path.basename(p)))
+        os.remove(os.path.join(os.path.dirname(p), ".cr-release-packages", chartname))
     except FileNotFoundError:
         pass
     shutil.move(p, ".cr-release-packages")
+    return chartname
 
 def push_chart_release():
     token = os.environ.get("GITHUB_TOKEN")
@@ -33,15 +41,20 @@ def push_chart_release():
 
 def create_index():
     token = os.environ.get("GITHUB_TOKEN")
-    if token:
-        subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts", "-t", token, "--push"], capture_output=True)
+    #data = {"apiVersion": "v1", "generated": 
+    #generated: "2021-03-24T11:25:56.578317012+05:30"
 
-def update_chart_annotation():
-    pass
+    #out = yaml.dump({"1": "ok"}, Dumper=Dumper)
+    print(out)
+    #if token:
+    #    subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts", "-t", token, "--push"], capture_output=True)
+
+def update_chart_annotation(chartname):
+    subprocess.run(["tar", "zxvf", os.path.join(".cr-release-packages", chartname)], capture_output=True)
 
 def main():
     category, organization, chart, version = get_modified_charts()
-    prepare_chart_for_release(category, organization, chart, version )
+    chartname = prepare_chart_for_release(category, organization, chart, version )
     push_chart_release()
-    update_chart_annotation()
+    update_chart_annotation(chartname)
     create_index()
