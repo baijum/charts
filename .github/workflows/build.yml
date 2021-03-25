@@ -18,4 +18,5 @@ jobs:
           git config user.email "baiju.m.mail@gmail.com"
 
       - name: Verify package
-        run: 
+        run: |
+          echo ${{ github.actor }}
