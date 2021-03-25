@@ -38,4 +38,5 @@ def main():
                                         help="check if the user can update the chart")
     args = parser.parse_args()
     category, organization, chart, version = get_modified_charts()
+    print(category, organization, chart, version)
     verify_user(args.username, category, organization, chart, version)
