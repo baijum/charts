@@ -29,6 +29,7 @@ def verify_user(username, category, organization, chart, version):
     data = open(os.path.join("charts", category, organization, chart, "owner.yaml")).read()
     out = yaml.load(data, Loader=Loader)
     if username not in out['usernames']:
+        print("User doesn't exist in list of owners:", username)
         sys.exit(1)
 
 def main():
