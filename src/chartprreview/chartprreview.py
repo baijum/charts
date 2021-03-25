@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 import subprocess
 import argparse
 
@@ -27,11 +28,13 @@ def get_modified_charts():
 def verify_user(username, category, organization, chart, version):
     data = open(os.path.join("charts", category, organization, chart, "owner.yaml")).read()
     out = yaml.load(data, Loader=Loader)
+    if username not in out['usernames']:
+        sys.exit(1)
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--verify-user", dest="username", type=str, required=True,
                                         help="check if the user can update the chart")
     args = parser.parse_args()
-    get_modified_charts()
+    category, organization, chart, version = get_modified_charts()
     verify_user(args.username, category, organization, chart, version)
