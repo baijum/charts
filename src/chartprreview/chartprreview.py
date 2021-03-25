@@ -14,11 +14,12 @@ except ImportError:
 def get_modified_charts():
     commit = subprocess.run(["git", "rev-parse", "--verify", "HEAD"], capture_output=True)
     commit_hash = commit.stdout.strip()
+    print("DDDDDDDD", commit_hash)
     files = subprocess.run(["git", "diff-tree", "--no-commit-id", "--name-only", "-r", commit_hash], capture_output=True)
     pattern = re.compile("charts/(\w+)/([\w-]+)/([\w-]+)/([\w\.]+)/.*")
     count = 0
+    print("BBBB", files.stdout.decode("utf-8"))
     for line in files.stdout.decode("utf-8").split('\n'):
-        print("BBBB", line)
         m = pattern.match(line)
         if m:
             category, organization, chart, version = m.groups()
