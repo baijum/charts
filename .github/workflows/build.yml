@@ -4,7 +4,7 @@ on:
   pull_request: {}
 
 jobs:
-  release:
+  valid-user:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,6 +17,12 @@ jobs:
           git config user.name "Baiju Muthukadan"
           git config user.email "baiju.m.mail@gmail.com"
 
-      - name: Verify package
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Verify user
         run: |
-          echo ${{ github.actor }}
+          python3 -m venv ve1
+          ve1/bin/python3 setup.py install
+          v11/bin/chart-pr-review --verify-user=${{ github.actor }}
