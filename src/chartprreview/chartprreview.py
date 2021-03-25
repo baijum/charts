@@ -18,6 +18,7 @@ def get_modified_charts():
     pattern = re.compile("charts/(\w+)/([\w-]+)/([\w-]+)/([\w\.]+)/.*")
     count = 0
     for line in files.stdout.decode("utf-8").split('\n'):
+        print("BBBB", line)
         m = pattern.match(line)
         if m:
             category, organization, chart, version = m.groups()
