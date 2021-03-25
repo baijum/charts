@@ -25,4 +25,4 @@ jobs:
         run: |
           python3 -m venv ve1
           ve1/bin/python3 setup.py install
-          v11/bin/chart-pr-review --verify-user=${{ github.actor }}
+          ve1/bin/chart-pr-review --verify-user=${{ github.actor }}
