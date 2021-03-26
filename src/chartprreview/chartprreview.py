@@ -1,8 +1,8 @@
 import re
 import os
 import sys
-import subprocess
 import argparse
+import subprocess
 
 import requests
 import yaml
@@ -34,6 +34,21 @@ def verify_user(username, category, organization, chart, version):
         print("User doesn't exist in list of owners:", username)
         sys.exit(1)
 
+def verify_report(category, organization, chart, version):
+    data = open(os.path.join("charts", category, organization, chart, "owner.yaml")).read()
+    out = yaml.load(data, Loader=Loader)
+    publickey = out['public-key']
+    with open("public.key", "w") as fd:
+        fd.write(publickey)
+    out = subprocess.run(["gpg", "--import", "public.key"], capture_output=True)
+    print(out.stdout.decode("utf-8"))
+    print(out.stderr.decode("utf-8"))
+    report = os.path.join("charts", category, organization, chart, version, "report.yaml")
+    sign = os.path.join("charts", category, organization, chart, version, "report.yaml.asc")
+    out = subprocess.run(["gpg", "--verify", sign, report], capture_output=True)
+    print(out.stdout.decode("utf-8"))
+    print(out.stderr.decode("utf-8"))
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--verify-user", dest="username", type=str, required=True,
@@ -43,3 +58,4 @@ def main():
     args = parser.parse_args()
     category, organization, chart, version = get_modified_charts(args.number)
     verify_user(args.username, category, organization, chart, version)
+    verify_report(category, organization, chart, version)
