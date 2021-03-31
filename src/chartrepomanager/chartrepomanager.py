@@ -2,7 +2,10 @@ import shutil
 import os
 import re
 import subprocess
+import datetime
+from datetime import datetime, timezone
 
+import requests
 import yaml
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -39,12 +42,31 @@ def push_chart_release():
     if token:
         subprocess.run(["cr", "upload", "-o", "baijum", "-r", "charts", "-t", token], capture_output=True)
 
-def create_index():
+def create_index(chartname, category, organization, chart, version):
+    path = os.path.join("charts", category, organization, chart, version)
     token = os.environ.get("GITHUB_TOKEN")
-    #data = {"apiVersion": "v1", "generated": 
-    #generated: "2021-03-24T11:25:56.578317012+05:30"
+    r = requests.get('https://github.com/baijum/charts/raw/gh-pages/index.yaml')
+    if r.status_code == 200:
+        data = yaml.load(r.text, Loader=Loader)
+    else:
+        data = {"apiVersion": "v1",
+            "generated": datetime.now(timezone.utc).astimezone().isoformat(),
+            "entries": {}}
+    if os.path.exists(os.path.join(path, "src")):
+        out = subprocess.run(["helm", "show", "chart", os.path.join(path, "src")], capture_output=True)
+        p = out.stdout.decode("utf-8")
+        crt = yaml.load(p, Loader=Loader)
 
-    #out = yaml.dump({"1": "ok"}, Dumper=Dumper)
+    crtentries = []
+    for v in data["entries"][chart]:
+        if v["version"] == version:
+            continue
+        crtentries.append(v)
+
+    crtentries.append(crt)
+    data["entries"][chart] = crtentries
+
+    out = yaml.dump(data, Dumper=Dumper)
     print(out)
     #if token:
     #    subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts", "-t", token, "--push"], capture_output=True)
@@ -55,6 +77,7 @@ def update_chart_annotation(chartname):
 def main():
     category, organization, chart, version = get_modified_charts()
     chartname = prepare_chart_for_release(category, organization, chart, version )
-    push_chart_release()
-    update_chart_annotation(chartname)
-    create_index()
+    #https://github.com/baijum/charts/releases/download/chart-0.1.0-v3.valid/chart-0.1.0-v3.valid.tgz
+    #push_chart_release()
+    #update_chart_annotation(chartname)
+    create_index(chartname, category, organization, chart, version)
