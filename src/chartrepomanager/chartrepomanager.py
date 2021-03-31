@@ -55,6 +55,7 @@ def create_index(chartname, category, organization, chart, version):
     if os.path.exists(os.path.join(path, "src")):
         out = subprocess.run(["helm", "show", "chart", os.path.join(path, "src")], capture_output=True)
         p = out.stdout.decode("utf-8")
+        breakpoint()
         crt = yaml.load(p, Loader=Loader)
 
     crtentries = []
@@ -77,7 +78,6 @@ def update_chart_annotation(chartname):
 def main():
     category, organization, chart, version = get_modified_charts()
     chartname = prepare_chart_for_release(category, organization, chart, version )
-    #https://github.com/baijum/charts/releases/download/chart-0.1.0-v3.valid/chart-0.1.0-v3.valid.tgz
     #push_chart_release()
     #update_chart_annotation(chartname)
     create_index(chartname, category, organization, chart, version)
