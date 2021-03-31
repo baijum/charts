@@ -26,7 +26,7 @@ def get_modified_charts():
     return "", "", "", ""
 
 def prepare_chart_for_release(category, organization, chart, version):
-    path = os.path.join("charts", category, organization, chart, version)
+    path = os.path.join("charts", category, organization, chart, version, "src")
     out = subprocess.run(["helm", "package", path], capture_output=True)
     p = out.stdout.decode("utf-8").strip().split(":")[1].strip()
     chartname = os.path.basename(p)
@@ -58,7 +58,7 @@ def create_index(chartname, category, organization, chart, version):
         crt = yaml.load(p, Loader=Loader)
 
     crtentries = []
-    for v in data["entries"][chart]:
+    for v in data["entries"].get(chart, []):
         if v["version"] == version:
             continue
         crtentries.append(v)
