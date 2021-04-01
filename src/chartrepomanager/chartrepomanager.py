@@ -3,6 +3,7 @@ import os
 import re
 import subprocess
 import datetime
+import tempfile
 from datetime import datetime, timezone
 
 import requests
@@ -42,7 +43,12 @@ def push_chart_release():
     if token:
         subprocess.run(["cr", "upload", "-o", "baijum", "-r", "charts", "-t", token], capture_output=True)
 
-def create_index(chartname, category, organization, chart, version):
+def create_worktree_for_index():
+    dr = tempfile.mkdtemp(prefix="crm-")
+    subprocess.run(["git", "worktree", "add", "--detach", dr, "origin/gh-pages"], capture_output=True)
+    retunr dr
+
+def create_index(indexdir, chartname, category, organization, chart, version):
     path = os.path.join("charts", category, organization, chart, version)
     token = os.environ.get("GITHUB_TOKEN")
     r = requests.get('https://github.com/baijum/charts/raw/gh-pages/index.yaml')
@@ -67,8 +73,11 @@ def create_index(chartname, category, organization, chart, version):
     data["entries"][chart] = crtentries
 
     out = yaml.dump(data, Dumper=Dumper)
-    with open("../index/index.yaml", "w") as fd:
+    with open(os.path.join(indexdir, "index.yaml"), "w") as fd:
         fd.write(out)
+    subprocess.run(["git", "add", os.path.join(indexdir, "index.yaml")], capture_output=True)
+    subprocess.run(["git", "commit", indexdir, "-m", "Update index.html")], capture_output=True)
+    subprocess.run(["git", "push", indexdir, f"https://x-access-token:{token}@github.com/baijum/charts"], capture_output=True)
     #if token:
     #    subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts", "-t", token, "--push"], capture_output=True)
 
@@ -80,4 +89,5 @@ def main():
     chartname = prepare_chart_for_release(category, organization, chart, version )
     #push_chart_release()
     #update_chart_annotation(chartname)
-    create_index(chartname, category, organization, chart, version)
+    indexdir = create_worktree_for_index()
+    create_index(indexdir, chartname, category, organization, chart, version)
