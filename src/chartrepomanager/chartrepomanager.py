@@ -46,7 +46,7 @@ def push_chart_release():
 def create_worktree_for_index():
     dr = tempfile.mkdtemp(prefix="crm-")
     subprocess.run(["git", "worktree", "add", "--detach", dr, "origin/gh-pages"], capture_output=True)
-    retunr dr
+    return dr
 
 def create_index(indexdir, chartname, category, organization, chart, version):
     path = os.path.join("charts", category, organization, chart, version)
@@ -75,11 +75,13 @@ def create_index(indexdir, chartname, category, organization, chart, version):
     out = yaml.dump(data, Dumper=Dumper)
     with open(os.path.join(indexdir, "index.yaml"), "w") as fd:
         fd.write(out)
-    subprocess.run(["git", "add", os.path.join(indexdir, "index.yaml")], capture_output=True)
-    subprocess.run(["git", "commit", indexdir, "-m", "Update index.html")], capture_output=True)
-    subprocess.run(["git", "push", indexdir, f"https://x-access-token:{token}@github.com/baijum/charts"], capture_output=True)
-    #if token:
-    #    subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts", "-t", token, "--push"], capture_output=True)
+    out = subprocess.run(["git", "add", os.path.join(indexdir, "index.yaml")], cwd=indexdir, capture_output=True)
+    out = subprocess.run(["git", "commit", indexdir, "-m", "Update index.html"], cwd=indexdir, capture_output=True)
+    out = subprocess.run(["git", "push", f"https://x-access-token:{token}@github.com/baijum/charts", "HEAD:refs/heads/gh-pages", "-f"], cwd=indexdir, capture_output=True)
+    o = out.stdout.decode("utf-8")
+    e = out.stderr.decode("utf-8")
+    print("AAAAAAAAAAA", p)
+    print("BBBBBBBBBBB", e)
 
 def update_chart_annotation(chartname):
     subprocess.run(["tar", "zxvf", os.path.join(".cr-release-packages", chartname)], capture_output=True)
