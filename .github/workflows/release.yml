@@ -11,8 +11,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+
 
       - name: Configure Git
         run: |
@@ -24,3 +23,7 @@ jobs:
           make
           ./chart-releaser push-release
           ./chart-releases push-index
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        ref: 'gh-pages'

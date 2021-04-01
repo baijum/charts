@@ -55,7 +55,6 @@ def create_index(chartname, category, organization, chart, version):
     if os.path.exists(os.path.join(path, "src")):
         out = subprocess.run(["helm", "show", "chart", os.path.join(path, "src")], capture_output=True)
         p = out.stdout.decode("utf-8")
-        breakpoint()
         crt = yaml.load(p, Loader=Loader)
 
     crtentries = []
@@ -68,7 +67,8 @@ def create_index(chartname, category, organization, chart, version):
     data["entries"][chart] = crtentries
 
     out = yaml.dump(data, Dumper=Dumper)
-    print(out)
+    with open("../index/index.yaml", "w") as fd:
+        fd.write(out)
     #if token:
     #    subprocess.run(["cr", "index", "-c", "https://baijum.github.io/charts/", "-o", "baijum", "-r", "charts", "-t", token, "--push"], capture_output=True)
 
