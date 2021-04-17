@@ -62,43 +62,6 @@ entries:
     urls:
     - https://github.com/kubepreset/helm-charts/releases/download/kubepreset-0.1.0/kubepreset-0.1.0.tgz
     version: 0.1.0
-
-  kubepreset:
-  - annotations:
-      artifacthub.io/crds: "- kind: ServiceBinding\n  version: v1alpha2\n  name: servicebindings.service.binding\n
-        \ displayName: Service Binding\n  description: Desired state of application
-        connectivity with the backing service\n"
-      artifacthub.io/crdsExamples: "- apiVersion: service.binding/v1alpha2\n  kind:
-        ServiceBinding\n  metadata:\n    name: demo-service\n  spec:\n    application:\n
-        \     apiVersion: apps/v1\n      kind:       Deployment\n      name:       demo-app\n
-        \   service:\n      apiVersion: com.example/v1alpha1\n      kind:       DemoService\n
-        \     name:       prod-demo-service\n  status:\n    conditions:\n    - type:
-        \  Ready\n      status: 'True'\n"
-      artifacthub.io/images: "- name: kubepreset\n  image: quay.io/kubepreset/kubepreset:0.1.0\n"
-      artifacthub.io/links: "- name: Website\n  url: https://kubepreset.dev\n- name:
-        Primary Git Repo\n  url: https://github.com/kubepreset/kubepreset\n- name:
-        Charts Git Repo\n  url: https://github.com/kubepreset/helm-charts\n"
-      artifacthub.io/maintainers: "- name: \"Baiju Muthukadan\"\n  email: baiju.m.mail@gmail.com\n"
-      artifacthub.io/operator: 'true'
-      artifacthub.io/operatorCapabilities: Basic Install
-      helm.openshift.io/provider: Red Hat
-    apiVersion: v2
-    appVersion: v0.1.0
-    created: '2020-10-26T11:29:34.540127925Z'
-    description: 'KubePreset: Streamline Application Connectivity with Backing Services'
-    digest: e37814c03d5a0a0b1f480ad673ea2d369f66392f06eead23e79e1d3aa77458b7
-    icon: https://avatars0.githubusercontent.com/u/70762365
-    keywords:
-    - service-binding
-    - service
-    - backing-service
-    - application
-    - operator
-    name: kubepreset
-    type: application
-    urls:
-    - https://github.com/kubepreset/helm-charts/releases/download/kubepreset-0.1.0/kubepreset-0.1.0.tgz
-    version: 0.1.0
   test-chart:
   - apiVersion: v2
     appVersion: 1.16.0
