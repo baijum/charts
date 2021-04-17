@@ -1,5 +1,18 @@
 apiVersion: v1
 entries:
+  redhat-chart:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: '2021-03-22T17:25:21.881641035+05:30'
+    description: A Helm chart for Kubernetes
+    digest: 2c0bebd9de26cda6b00a13a99ff0c22378eb6d520ea74bba3c7917f004a2f9a8
+    icon: https://www.example.com/chart-icon.png
+    kubeVersion: 1.20.0
+    name: chart
+    type: application
+    urls:
+    - https://github.com/baijum/charts/releases/download/chart-0.1.0-v3.valid/chart-0.1.0-v3.valid.tgz
+    version: 0.1.0-v3.valid
   chart:
   - apiVersion: v2
     appVersion: 1.16.0
